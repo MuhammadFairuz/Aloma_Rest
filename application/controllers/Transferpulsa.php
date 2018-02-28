@@ -5,6 +5,8 @@ require APPPATH . 'libraries/REST_Controller.php';
 
 class Transferpulsa extends REST_Controller {
     private $auth;
+    private $dataTransfer;
+    private $dataUser;
     public function __construct()
     {
         parent::__construct();
@@ -36,6 +38,9 @@ class Transferpulsa extends REST_Controller {
         $this->auth = $check->num_rows()>0?"1":"0";
     }
 
+    public function get_user($key){
+
+    }
 
     private function getTransferPulsa($id = '')
     {
@@ -58,36 +63,59 @@ class Transferpulsa extends REST_Controller {
         );
     }
 
-    public function index_post($id = '' , $action = '')
+    public function index_post($action = '')
     {
         $this->responseMessage = "User tidak ditemukan";
         $this->responseCode = REST_Controller::HTTP_FORBIDDEN;
 
         $params = $this->post();
         $this->user_auth($params['key']);
-//	    print_r($this->auth);
+	    print_r($this->auth);
         if ($this->auth == 1){
 
             $this->responseMessage = $this->defaultMessage;
             $this->responseCode = $this->defaultCode;
 
-            if($id && $action) {
-                $result = $this->getTransferPulsa($id);
-                $isOk = $result['responseMessage']['is_ok'];
+            if($action != null) {
+//                $result = $this->getTransferPulsa($id);
+//                $isOk = $result['responseMessage']['is_ok'];
 
                 switch($action)
                 {
                     case 'url':
-                        if($isOk){
+//                        if($isOk){
                             $params = $this->post();
-                            $this->user_auth($params['key']);
+                            $key = $this->user_auth($params['key']);
+                            $keys = $params['key'];
                             echo $this->auth;
-                        }
+
+//                            get data user dengan key
+//                            ambil id dari data user
+//                            ambil data transfer pulsa dengan id yang barusan di ambil
+
+                            $db_Name = 'aloma_go';
+                            $username = 'beni';
+                            $password = 'pbaArAsMrU';
+                            $host ='128.199.246.132';
+
+                            $connect = mysqli_connect($host, $username, $password, $db_Name);
+                            $sql = "select * from t_transfer_pulsa 
+                                    INNER JOIN user on user.id = t_transfer_pulsa.user_token
+                                    WHERE uniq_key ='$keys'";
+                            $res = mysqli_query($connect, $sql);
+                            $response = array();
+                            while($row= mysqli_fetch_array($res)){
+                                array_push( $response, $row);
+                            }
+
+                            $this->response(array('is_ok' => true, 'message' => $response), REST_Controller::HTTP_OK);
+
+//                        }
                         break;
                     case 'update':
-                        if($isOk) {
+//                        if($isOk) {
                             $params = $this->post();
-                            $data = $result['responseMessage']['data'];
+//                            $data = $result['responseMessage']['data'];
 
                             $condition['id'] = $id;
                             $dataUpdate = array(
@@ -102,13 +130,13 @@ class Transferpulsa extends REST_Controller {
                             $this->model_adm->update($condition, $dataUpdate, 't_transfer_pulsa');
 
                             $this->response(array('is_ok' => true, 'message' => 'Data berhasil diupdate'), REST_Controller::HTTP_OK);
-                        } else {
-                            $this->response(array('is_ok' => false, 'error_message' => 'ID tidak ditemukan') , $this->defaultCode);
-                        }
+//                        } else {
+//                            $this->response(array('is_ok' => false, 'error_message' => 'ID tidak ditemukan') , $this->defaultCode);
+//                        }
                         break;
 
                     case 'delete':
-                        if($isOk) {
+//                        if($isOk) {
                             $condition['id'] = $id;
                             $data = array(
                                 'deleted' => 1
@@ -116,9 +144,9 @@ class Transferpulsa extends REST_Controller {
                             $this->model_adm->update($condition, $data, 't_transfer_pulsa');
 
                             $this->response(array('is_ok' => true, 'message' => 'Data berhasil dihapus'), REST_Controller::HTTP_OK);
-                        } else {
+//                        } else {
                             $this->response(array('is_ok' => false, 'error_message' => 'ID tidak ditemukan'), $this->defaultCode);
-                        }
+//                        }
                         break;
 
                     default:
