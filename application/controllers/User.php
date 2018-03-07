@@ -68,7 +68,8 @@ class User extends REST_Controller {
 					'id' => $data->id,
 					'username' => $data->username,
 					'email' => $data->email,
-					'terdaftar' => $data->terdaftar
+					'terdaftar' => $data->terdaftar,
+                    'uniq_key' => $data->uniq_key
 				);
 		} else {
 			$result = array(
