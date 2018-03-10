@@ -30,7 +30,6 @@ class Transferpulsa extends REST_Controller {
     {
         $params = $this->post();
         $this->user_auth($params['key']);
-        print_r($this->auth);
     }
     public function user_auth($uniq_key){
         $condition['uniq_key'] = $uniq_key;
@@ -70,7 +69,6 @@ class Transferpulsa extends REST_Controller {
 
         $params = $this->post();
         $this->user_auth($params['key']);
-	    print_r($this->auth);
         if ($this->auth == 1){
 
             $this->responseMessage = $this->defaultMessage;
@@ -87,7 +85,6 @@ class Transferpulsa extends REST_Controller {
                             $params = $this->post();
                             $key = $this->user_auth($params['key']);
                             $keys = $params['key'];
-                            echo $this->auth;
 
 //                            get data user dengan key
 //                            ambil id dari data user
